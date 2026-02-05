@@ -5,5 +5,10 @@
       emscripten 
       emscriptenStdenv 
       live-server
+      cmake
+      pkg-config
+      glfw
+      docker
+      nodejs_24
     ];
 }

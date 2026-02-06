@@ -15,11 +15,13 @@
 #include <stdlib.h>
 #include <GLFW/glfw3.h>
 
+#include "Graphing/Curve.h"
 #include "Graphing/GraphingWindow.h"
 #include "Render/Wgpu.h"
 
 static bool is_running = true;
 GraphingWindow* gw;
+flecs::world* w;
 
 void main_loop() {
     if (false /* QUITTING */) {
@@ -41,7 +43,8 @@ void main_loop() {
     // ImGui::ShowDemoWindow();
 
     bool draw = true;
-    gw->draw(draw);
+    gw->Draw(draw);
+    w->progress();
 
     imgui_render();
     auto encoder = make_command_encoder();
@@ -60,8 +63,14 @@ int main(int, char**)
     if (int val = init_window(); val != 0)
         return val;
     init_imgui();
-    flecs::world w;
-    gw = new GraphingWindow(w);
+    w = new flecs::world();
+    w->import<flecs::stats>();
+    w->set<flecs::Rest>({});
+
+    SetupInputPoint(*w);
+    SetupTransform(*w);
+    SetupCurve(*w);
+    gw = new GraphingWindow(*w);
 
 #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop(main_loop, 0, true);
@@ -72,4 +81,5 @@ int main(int, char**)
 #endif
 
     shutdown_cleanup();
+    delete w;
 }

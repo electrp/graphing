@@ -13,19 +13,29 @@
 struct GraphingWindow {
     // Relates graph to things it displays
     class GraphingRelation {};
-    class GraphingDrawer {
-        std::function<void(flecs::entity e, GraphingWindow& state)> draw;
+    struct GraphingContext {
+        glm::vec2 canvas_p0;
+        glm::vec2 canvas_sz;
+        glm::vec2 canvas_p1;
+        std::function<glm::vec2(glm::vec2 pos)>& world_to_screen;
+        std::function<glm::vec2(glm::vec2 pos)>& screen_to_world;
+    };
+    struct GraphingDrawer {
+        std::function<void(flecs::entity e, GraphingWindow& window, GraphingContext& ctx)> draw;
+
+        bool enabled = true;
     };
 
     explicit GraphingWindow(flecs::world w);
-    void draw(bool& open);
+    void Draw(bool& open);
+
 
     // Members
     flecs::entity m_host;
     flecs::entity m_currentlyDragging;
-    float m_zoom = 50; // Pixels per unit
+    float m_zoom = 200; // Pixels per unit
     float m_pointRadius = 10;
-    glm::vec2 m_position = {0, 0};
+    glm::vec2 m_position = {100,  50};
     flecs::query<Position, InputPoint> m_pointQuery;
     flecs::query<GraphingDrawer> m_graphingObjects;
 };

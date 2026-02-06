@@ -49,6 +49,16 @@ add_executable(graphing
         src/Graphing/InputPoint.h
         src/Entity/Transform.cpp
         src/Entity/Transform.h
+        src/Graphing/Curve.cpp
+        src/Graphing/Curve.h
+        src/Graphing/Curves/NLIDeCasteljauPolynomial.cpp
+        src/Graphing/Curves/NLIDeCasteljauPolynomial.h
+        src/Graphing/Curves/BaseFunction.cpp
+        src/Graphing/Curves/BaseFunction.h
+        src/Graphing/Curves/BBDeCasteljauPolynomial.cpp
+        src/Graphing/Curves/BBDeCasteljauPolynomial.h
+        src/Graphing/PascalCache.cpp
+        src/Graphing/PascalCache.h
 )
 
 if(EMSCRIPTEN)

@@ -3,3 +3,11 @@
 //
 
 #include "Transform.h"
+
+void SetupTransform(flecs::world w) {
+    w.component<Position>()
+        .member("x", &Position::x)
+        .member("y", &Position::y)
+        .member("z", &Position::z)
+        .member("w", &Position::w);
+}

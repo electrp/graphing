@@ -4,7 +4,8 @@
 
 #ifndef GRAPHING_INPUTPOINT_H
 #define GRAPHING_INPUTPOINT_H
-
+#include "flecs.h"
+#include "imgui.h"
 
 
 struct InputPoint {
@@ -17,7 +18,9 @@ struct InputPoint {
     typedef int Constraint_t;
 
     Constraint_t constraints = XPos | ZPos | WPos;
+    ImColor color = ImColor(255, 255, 255, 64);
 };
+void SetupInputPoint(flecs::world w);
 
 
 #endif //GRAPHING_INPUTPOINT_H

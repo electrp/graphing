@@ -10,6 +10,7 @@
 #include "Graphing/Curve.h"
 
 struct BaseFunction {
+    virtual ~BaseFunction();
     virtual void generate(std::span<float> inputs) = 0;
     virtual float sample(float t) const = 0;
     virtual Curve generate_curve_obj() = 0;

@@ -6,6 +6,9 @@
 
 #include "Graphing/PascalCache.h"
 
+BBDeCasteljauPolynomial::~BBDeCasteljauPolynomial() {
+}
+
 void BBDeCasteljauPolynomial::generate(std::span<float> inputs) {
     coef = {
         inputs.begin(), inputs.end()

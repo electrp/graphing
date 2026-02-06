@@ -16,6 +16,12 @@ else()
     add_library(lua ${LUA_SRCS} ${LUA_HEADERS})
 endif()
 
+
+
+if(EMSCRIPTEN)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -sTOTAL_STACK=48mb -sALLOW_MEMORY_GROWTH")
+endif()
+
 add_executable(graphing
     src/main.cpp
     src/Render/TypedBuffer.h

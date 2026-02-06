@@ -4,6 +4,9 @@
 
 #include "NLIDeCasteljauPolynomial.h"
 
+NLIDeCasteljauPolynomial::~NLIDeCasteljauPolynomial() {
+}
+
 void NLIDeCasteljauPolynomial::generate(std::span<float> inputs) {
     coef = {inputs.begin(), inputs.end()};
 }

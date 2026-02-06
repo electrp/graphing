@@ -27,7 +27,7 @@ struct GraphingWindow {
     };
 
     explicit GraphingWindow(flecs::world w);
-    void Draw(bool& open);
+    ImGuiID Draw(bool& open);
 
 
     // Members

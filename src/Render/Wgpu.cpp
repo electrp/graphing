@@ -156,7 +156,7 @@ int init_window()
     main_scale = ImGui_ImplGlfw_GetContentScaleForMonitor(glfwGetPrimaryMonitor()); // Valid on GLFW 3.3+ only
     wgpu_surface_width *= main_scale;
     wgpu_surface_height *= main_scale;
-    window = glfwCreateWindow(wgpu_surface_width, wgpu_surface_height, "Dear ImGui GLFW+WebGPU example", nullptr, nullptr);
+    window = glfwCreateWindow(wgpu_surface_width, wgpu_surface_height, "Graphing", nullptr, nullptr);
     if (window == nullptr)
         return 1;
 
@@ -180,6 +180,7 @@ void init_imgui() {
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();

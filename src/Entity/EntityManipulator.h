@@ -11,7 +11,8 @@
 
 class EntityManipulator {
 public:
-    void draw(bool* enabled);
+    EntityManipulator(flecs::query<> query);
+    void draw(bool *enabled, flecs::world w);
 
 private:
     flecs::world world;

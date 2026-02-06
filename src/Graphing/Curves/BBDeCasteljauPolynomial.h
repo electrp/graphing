@@ -8,9 +8,10 @@
 
 
 struct BBDeCasteljauPolynomial : BaseFunction {
+    virtual ~BBDeCasteljauPolynomial();
     void generate(std::span<float> inputs) override;
     float sample(float t) const override;
-    Curve generate_curve_obj();
+    Curve generate_curve_obj() override;
 
     std::vector<float> coef;
 };

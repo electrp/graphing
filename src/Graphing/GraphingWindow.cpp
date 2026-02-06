@@ -6,6 +6,7 @@
 
 #include "imgui.h"
 #include <iostream>
+#include <string>
 
 #include "Curves/BBDeCasteljauPolynomial.h"
 #include "Curves/NLIDeCasteljauPolynomial.h"
@@ -23,26 +24,28 @@ GraphingWindow::GraphingWindow(flecs::world w) {
         .cached()
         .build();
 
-    flecs::entity curve = m_host.child(w.component<GraphingRelation>())
+    flecs::entity curve = m_host.child(w.component<GraphingRelation>(), "NLI Curve")
         .add<NLIDeCasteljauPolynomial>()
         .add<GraphingRelation>(m_host)
         .set<GraphingDrawer>(GraphingDrawer {BasicCurveDrawer});
 
-    flecs::entity curve2 = m_host.child(w.component<GraphingRelation>())
+    flecs::entity curve2 = m_host.child(w.component<GraphingRelation>(), "BB Curve")
         .add<BBDeCasteljauPolynomial>()
         .add<GraphingRelation>(m_host)
-        .set<GraphingDrawer>(GraphingDrawer {BasicCurveDrawer});
+        .set<GraphingDrawer>(GraphingDrawer {BasicCurveDrawer, false});
 
-    for (float i = 0; i <= 1; i += .2) {
-        m_host.child(w.component<GraphingRelation>())
-            .emplace<Position>(glm::vec4{i, 1, 0, 1})
+    int i = 1;
+    for (float f = 0; f <= 1; f += .2, ++i) {
+        std::string name = "Point " + std::to_string(i);
+        m_host.child(w.component<GraphingRelation>(), name.c_str())
+            .emplace<Position>(glm::vec4{f, 1, 0, 1})
             .emplace<InputPoint>()
             .add<CurveControlPointRel>(curve)
             .add<CurveControlPointRel>(curve2);
     }
 }
 
-void GraphingWindow::Draw(bool &open) {
+ImGuiID GraphingWindow::Draw(bool &open) {
     auto w = m_host.world();
 
     // Setup window
@@ -137,4 +140,6 @@ void GraphingWindow::Draw(bool &open) {
     // Finish window
     ImGui::EndChild();
     ImGui::End();
+
+    return ImGui::GetID("Graphing");
 };

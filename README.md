@@ -4,6 +4,13 @@ Primarially for DigiPen MAT300
 
 You will likely need to download and setup wgpu binaries in the extern folders
 
+Super basic wsl/linux emscripten build instructions:
+```
+cd scripts
+nix-shell
+./build_em.sh
+```
+
 # prj 2
 - Doing bezier curves
 - Take user input from clicking on points

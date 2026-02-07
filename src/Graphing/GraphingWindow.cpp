@@ -9,6 +9,7 @@
 #include <string>
 
 #include "Curves/BBDeCasteljauPolynomial.h"
+#include "Curves/NLIDeCasteljauBezier.h"
 #include "Curves/NLIDeCasteljauPolynomial.h"
 
 GraphingWindow::GraphingWindow(flecs::world w) {
@@ -27,21 +28,27 @@ GraphingWindow::GraphingWindow(flecs::world w) {
     flecs::entity curve = m_host.child(w.component<GraphingRelation>(), "NLI Curve")
         .add<NLIDeCasteljauPolynomial>()
         .add<GraphingRelation>(m_host)
-        .set<GraphingDrawer>(GraphingDrawer {BasicCurveDrawer});
+        .set<GraphingDrawer>(GraphingDrawer {CurveDrawerFx, false});
 
     flecs::entity curve2 = m_host.child(w.component<GraphingRelation>(), "BB Curve")
         .add<BBDeCasteljauPolynomial>()
         .add<GraphingRelation>(m_host)
-        .set<GraphingDrawer>(GraphingDrawer {BasicCurveDrawer, false});
+        .set<GraphingDrawer>(GraphingDrawer {CurveDrawerFx, false});
+
+    flecs::entity curve3 = m_host.child(w.component<GraphingRelation>(), "NLICurve 2")
+        .add<NLIDeCasteljauBezier>()
+        .add<GraphingRelation>(m_host)
+        .set<GraphingDrawer>(GraphingDrawer {CurveDrawerFt, true});
 
     int i = 1;
     for (float f = 0; f <= 1; f += .2, ++i) {
         std::string name = "Point " + std::to_string(i);
         m_host.child(w.component<GraphingRelation>(), name.c_str())
-            .emplace<Position>(glm::vec4{f, 1, 0, 1})
-            .emplace<InputPoint>()
+            .emplace<Position>(glm::vec4{f, 1, 0, f})
+            .emplace<InputPoint>(InputPoint::ZPos | InputPoint::WPos)
             .add<CurveControlPointRel>(curve)
-            .add<CurveControlPointRel>(curve2);
+            .add<CurveControlPointRel>(curve2)
+            .add<CurveControlPointRel>(curve3);
     }
 }
 
@@ -50,6 +57,10 @@ ImGuiID GraphingWindow::Draw(bool &open) {
 
     // Setup window
     ImGui::Begin("Graphing");
+    if (ImGui::Button("New Entity")) {
+        m_host.child<GraphingRelation>();
+    }
+
     if (ImGui::Button("Serialize Test")) {
         std::vector<std::string> units;
         w.defer_begin();
@@ -68,6 +79,8 @@ ImGuiID GraphingWindow::Draw(bool &open) {
     ImGui::PopStyleColor();
     ImGui::PopStyleVar();
 
+    m_zoom += ImGui::GetIO().MouseWheel * 5;
+
     // Get sizes
     glm::vec2 canvas_p0 = ImGui::GetCursorScreenPos();
     glm::vec2 canvas_sz = ImGui::GetContentRegionAvail();
@@ -77,12 +90,10 @@ ImGuiID GraphingWindow::Draw(bool &open) {
     ImGuiIO& io = ImGui::GetIO();
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
-    glm::vec2 min_extent = m_position - half_size;
-    glm::vec2 max_extent = m_position + half_size;
     glm::vec2 button_size = glm::vec2(m_pointRadius * 2, m_pointRadius * 2);
 
     std::function world_to_screen = [&](glm::vec2 pos) -> glm::vec2 {
-        glm::vec2 out = pos * m_zoom + half_size;
+        glm::vec2 out = (pos - m_position) * m_zoom + half_size;
         out.y = canvas_sz.y - out.y;
         return out;
     };
@@ -90,39 +101,62 @@ ImGuiID GraphingWindow::Draw(bool &open) {
     std::function screen_to_world = [&](glm::vec2 pos) -> glm::vec2 {
         pos.y = canvas_sz.y - pos.y;
         glm::vec2 out = (pos - half_size) / m_zoom;
-        return out;
+        return out + m_position;
     };
 
-    if (m_currentlyDragging.is_alive() && ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
-        Position& pos = m_currentlyDragging.get_mut<Position>();
-        InputPoint const& point = m_currentlyDragging.get<InputPoint>();
+    glm::vec2 world_extent_screen_min = screen_to_world({0, 0});
+    glm::vec2 world_extent_screen_max = screen_to_world(canvas_sz);
 
-        glm::vec2 mouse_world = screen_to_world(glm::vec2(ImGui::GetMousePos()) - canvas_p0);
+    glm::vec2 screen_origin = world_to_screen({0, 0});
+    draw_list->AddLine(
+        glm::vec2{screen_origin.x, 0} + canvas_p0,
+        glm::vec2{screen_origin.x, canvas_sz.y} + canvas_p0,
+        IM_COL32(0, 255, 0, 128));
 
-        if (!(point.constraints & InputPoint::Constraints::XPos))
-            pos.x = mouse_world.x;
-
-        if (!(point.constraints & InputPoint::Constraints::YPos))
-            pos.y = mouse_world.y;
-
-        m_currentlyDragging.modified<Position>();
-    } else {
-        m_currentlyDragging = {};
-    }
+    draw_list->AddLine(
+        glm::vec2{0, screen_origin.y} + canvas_p0,
+        glm::vec2{canvas_sz.x, screen_origin.y} + canvas_p0,
+        IM_COL32(255, 0, 0, 128));
 
     m_pointQuery.each([&](flecs::entity e, Position& p, InputPoint& ip) {
         ImGui::PushID(e);
         glm::vec2 screen = world_to_screen(p);
         glm::vec2 begin_pos = screen - button_size / 2.0f;
-        draw_list->AddCircleFilled(screen + canvas_p0, m_pointRadius, ip.color);
         ImGui::SetCursorPos(begin_pos);
         ImGui::InvisibleButton("Draggable", button_size);
+        draw_list->AddCircleFilled(
+            screen + canvas_p0,
+            m_pointRadius,
+            ImGui::IsItemHovered() ? ip.color_hover : ip.color);
         if (!m_currentlyDragging.is_alive() && ImGui::IsItemActive() && ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
             m_currentlyDragging = e;
         }
 
         ImGui::PopID();
     });
+
+    if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
+        if (m_currentlyDragging.is_alive()) {
+            Position& pos = m_currentlyDragging.get_mut<Position>();
+            InputPoint const& point = m_currentlyDragging.get<InputPoint>();
+
+            glm::vec2 mouse_world = screen_to_world(glm::vec2(ImGui::GetMousePos()) - canvas_p0);
+
+            if (!(point.constraints & InputPoint::Constraints::XPos))
+                pos.x = mouse_world.x;
+
+            if (!(point.constraints & InputPoint::Constraints::YPos))
+                pos.y = mouse_world.y;
+
+            m_currentlyDragging.modified<Position>();
+        } else {
+            glm::vec2 delta = ImGui::GetIO().MouseDelta;
+            delta.y = -delta.y;
+            m_position -= delta / m_zoom;
+        }
+    } else {
+        m_currentlyDragging = {};
+    }
 
     GraphingContext c {
         canvas_p0,

@@ -3,21 +3,28 @@
 //
 
 #include "NLIDeCasteljauPolynomial.h"
+#include <algorithm>
+
+#include "BBDeCasteljauPolynomial.h"
+#include "BBDeCasteljauPolynomial.h"
 
 NLIDeCasteljauPolynomial::~NLIDeCasteljauPolynomial() {
 }
 
-void NLIDeCasteljauPolynomial::generate(std::span<float> inputs) {
+void NLIDeCasteljauPolynomial::generate(std::span<glm::vec4> inputs) {
     coef = {inputs.begin(), inputs.end()};
+
+    std::sort(coef.begin(), coef.end(), [&](glm::vec2 const& a, glm::vec2 const& b) { return a.x < b.x; });
 }
 
-float NLIDeCasteljauPolynomial::sample(float t) const {
+glm::vec4 NLIDeCasteljauPolynomial::sample(float t) const {
     if (coef.size() == 0)
-        return 0;
+        return glm::vec4{0};
     if (coef.size() == 1)
-        return coef[0];
+        return glm::vec4{coef[0].y};
 
-    std::vector<float> main = coef;
+    std::vector<float> main;
+    for (auto& val : coef) main.push_back(val.y);
     std::vector<float> sub;
     float inv = 1 - t;
     while (true) {
@@ -26,7 +33,7 @@ float NLIDeCasteljauPolynomial::sample(float t) const {
         }
         std::swap(main, sub);
         if (main.size() == 1)
-            return main[0];
+            return glm::vec4{main[0]};
         sub.clear();
     }
 }

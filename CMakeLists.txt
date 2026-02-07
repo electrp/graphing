@@ -65,6 +65,8 @@ add_executable(graphing
         src/Graphing/Curves/BBDeCasteljauPolynomial.h
         src/Graphing/PascalCache.cpp
         src/Graphing/PascalCache.h
+        src/Graphing/Curves/NLIDeCasteljauBezier.cpp
+        src/Graphing/Curves/NLIDeCasteljauBezier.h
 )
 
 if(EMSCRIPTEN)

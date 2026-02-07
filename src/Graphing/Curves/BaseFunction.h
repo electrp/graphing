@@ -11,8 +11,8 @@
 
 struct BaseFunction {
     virtual ~BaseFunction();
-    virtual void generate(std::span<float> inputs) = 0;
-    virtual float sample(float t) const = 0;
+    virtual void generate(std::span<glm::vec4> inputs) = 0;
+    virtual glm::vec4 sample(float t) const = 0;
     virtual Curve generate_curve_obj() = 0;
 
 
@@ -23,10 +23,10 @@ struct BaseFunction {
 template<typename T>
 Curve BaseFunction::template_generate_curve_obj() {
     return Curve {
-        [](flecs::entity e, std::span<float> inputs) {
+        [](flecs::entity e, std::span<glm::vec4> inputs) {
             e.get_mut<T>().generate(inputs);
         },
-        [](flecs::entity e, float t) -> float {
+        [](flecs::entity e, float t) -> glm::vec4 {
             return e.get<T>().sample(t);
         }
     };

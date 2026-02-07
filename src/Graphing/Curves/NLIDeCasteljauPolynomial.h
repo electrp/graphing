@@ -10,15 +10,17 @@
 #include <span>
 
 #include "BaseFunction.h"
+#include "BBDeCasteljauPolynomial.h"
+#include "BBDeCasteljauPolynomial.h"
 #include "Graphing/Curve.h"
 
 struct NLIDeCasteljauPolynomial : BaseFunction {
     virtual ~NLIDeCasteljauPolynomial();
-    void generate(std::span<float> inputs) override;
-    float sample(float t) const override;
+    void generate(std::span<glm::vec4> inputs) override;
+    glm::vec4 sample(float t) const override;
     Curve generate_curve_obj() override;
 
-    std::vector<float> coef;
+    std::vector<glm::vec2> coef;
 };
 
 

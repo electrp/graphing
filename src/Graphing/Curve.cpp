@@ -8,6 +8,7 @@
 
 #include "Curves/BaseFunction.h"
 #include "Curves/BBDeCasteljauPolynomial.h"
+#include "Curves/NLIDeCasteljauBezier.h"
 #include "Curves/NLIDeCasteljauPolynomial.h"
 #include "Entity/Transform.h"
 
@@ -36,18 +37,21 @@ void SetupCurve(flecs::world w) {
                 });
         });
 
-    w.component<CurveControlPointRel>().add(flecs::Symmetric);
+    w.component<CurveControlPointRel>()
+        .add(flecs::Symmetric)
+        .add(flecs::OrderedChildren)
+        .add(flecs::Sparse);
 
     auto update_curve_control_fn = [](flecs::entity curve_e) {
         auto& curve = curve_e.get_mut<Curve>();
-        std::vector<float> ctrl;
+        std::vector<glm::vec4> ctrl;
         curve_e.children(
             curve_e.world().component<CurveControlPointRel>(),
             [&](flecs::entity e) {
                 auto const& pos = e.get<Position>();
-                ctrl.push_back(pos[curve.param_index]);
+                ctrl.push_back(pos);
             });
-        curve.generate(curve_e, std::span<float>{ctrl});
+        curve.generate(curve_e, std::span{ctrl});
     };
 
     // Update curves with attached points
@@ -80,19 +84,60 @@ void SetupCurve(flecs::world w) {
         .add<CurveMarker>();
     w.component<BBDeCasteljauPolynomial>()
         .add<CurveMarker>();
+    w.component<NLIDeCasteljauBezier>()
+        .add<CurveMarker>();
 }
 
-void BasicCurveDrawer(flecs::entity e, GraphingWindow &window, GraphingWindow::GraphingContext& ctx) {
-    for (int i = 0; i < ctx.canvas_sz.x; i += 2) {
-        float x1 = ctx.screen_to_world({i, 0}).x;
-        float y1 = e.get<Curve>().sample(e, x1);
-        float x2 = ctx.screen_to_world({i + 1, 0}).x;
-        float y2 = e.get<Curve>().sample(e, x2);
+// For f(x)
+void CurveDrawerFx(flecs::entity e, GraphingWindow &window, GraphingWindow::GraphingContext& ctx) {
+    float last_x = ctx.screen_to_world({0, 0}).x;
+    float last = e.get<Curve>().sample(e, last_x).x;
+    for (int i = 1; i < ctx.canvas_sz.x; i += 2) {
+        float x = ctx.screen_to_world({i, 0}).x;
+        float y = e.get<Curve>().sample(e, x).x;
 
-        glm::vec2 s1 = ctx.world_to_screen({x1, y1}) + ctx.canvas_p0;
-        glm::vec2 s2 = ctx.world_to_screen({x2, y2}) + ctx.canvas_p0;
+        glm::vec2 s1 = ctx.world_to_screen({last_x, last}) + ctx.canvas_p0;
+        glm::vec2 s2 = ctx.world_to_screen({x, y}) + ctx.canvas_p0;
 
         auto* draw = ImGui::GetWindowDrawList();
         draw->AddLine(s1, s2, IM_COL32(155, 255, 255, 128));
+
+        last_x = x;
+        last = y;
     }
 }
+
+// For f(t)
+// I liked this idea but it did not work :(
+// void CurveDrawerFt(flecs::entity e, GraphingWindow &window, GraphingWindow::GraphingContext &ctx) {
+//     struct Pair {
+//         float input;
+//         glm::ivec2 output;
+//     };
+//
+//     // in screen space
+//     std::vector<Pair> point_stack;
+//     Curve const& curve = e.get<Curve>();
+//     auto* dl = ImGui::GetWindowDrawList();
+//
+//     float bottom = 0;
+//     point_stack.push_back({1, ctx.world_to_screen(curve.sample(e, 1))});
+//     while (point_stack.size() > 0) {
+//         Pair last = point_stack.back();
+//         float mid = (last.input + bottom) / 2;
+//         glm::ivec2 next = ctx.world_to_screen(curve.sample(e, mid));
+//         if (next == last.output) {
+//             bottom = last.input;
+//             point_stack.pop_back();
+//             dl->AddRectFilled
+//                 (glm::vec2{next} + ctx.canvas_p0, glm::vec2{next} + ctx.canvas_p0 + glm::vec2{1, 1}, ImColor(155, 255, 255, 128));
+//         } else {
+//             point_stack.push_back(Pair{mid, next});
+//         }
+//     }
+// }
+
+void CurveDrawerFt(flecs::entity e, GraphingWindow &window, GraphingWindow::GraphingContext &ctx) {
+    CurveDrawerFtSamples<200>(e, window, ctx);
+}
+

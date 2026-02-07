@@ -3,27 +3,43 @@
 //
 
 #include "BBDeCasteljauPolynomial.h"
-
+#include "BBDeCasteljauPolynomial.h"
+#include "BBDeCasteljauPolynomial.h"
+#include "BBDeCasteljauPolynomial.h"
+#include "BBDeCasteljauPolynomial.h"
+#include "BBDeCasteljauPolynomial.h"
+#include "BBDeCasteljauPolynomial.h"
+#include "BBDeCasteljauPolynomial.h"
+#include "BBDeCasteljauPolynomial.h"
+#include "BBDeCasteljauPolynomial.h"
+#include "BBDeCasteljauPolynomial.h"
 #include "Graphing/PascalCache.h"
+
+#include <algorithm>
 
 BBDeCasteljauPolynomial::~BBDeCasteljauPolynomial() {
 }
 
-void BBDeCasteljauPolynomial::generate(std::span<float> inputs) {
+void BBDeCasteljauPolynomial::generate(std::span<glm::vec4> inputs) {
     coef = {
         inputs.begin(), inputs.end()
     };
+
+    if (coef.size() <= 1)
+        return;
+
+    std::sort(coef.begin(), coef.end(), [&](glm::vec2 const& a, glm::vec2 const& b) { return a.x < b.x; });
 
     for (int i = 0; i < coef.size(); ++i) {
         coef[i] *= GetCombination(coef.size() - 1, i);
     }
 }
 
-float BBDeCasteljauPolynomial::sample(float t) const {
+glm::vec4 BBDeCasteljauPolynomial::sample(float t) const {
     if (coef.size() == 0)
-        return 0;
+        return glm::vec4{0};
     if (coef.size() == 1)
-        return coef[0];
+        return glm::vec4{coef[0].y};
 
     std::vector<float> t_vals;
     std::vector<float> it_vals;
@@ -41,9 +57,9 @@ float BBDeCasteljauPolynomial::sample(float t) const {
 
     float sum = 0;
     for (int i = 0; i < coef.size(); ++i) {
-        sum += t_vals[i] * it_vals[coef.size() - i - 1] * coef[i];
+        sum += t_vals[i] * it_vals[coef.size() - i - 1] * coef[i].y;
     }
-    return sum;
+    return glm::vec4{sum};
 }
 
 

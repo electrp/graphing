@@ -19,6 +19,7 @@ struct InputPoint {
 
     Constraint_t constraints = XPos | ZPos | WPos;
     ImColor color = ImColor(255, 255, 255, 64);
+    ImColor color_hover = ImColor(255, 255, 255, 128);
 };
 void SetupInputPoint(flecs::world w);
 

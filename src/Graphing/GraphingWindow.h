@@ -35,7 +35,7 @@ struct GraphingWindow {
     flecs::entity m_currentlyDragging;
     float m_zoom = 200; // Pixels per unit
     float m_pointRadius = 10;
-    glm::vec2 m_position = {100,  50};
+    glm::vec2 m_position = {.5f, .5f};
     flecs::query<Position, InputPoint> m_pointQuery;
     flecs::query<GraphingDrawer> m_graphingObjects;
 };

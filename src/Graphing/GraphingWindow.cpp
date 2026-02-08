@@ -8,7 +8,9 @@
 #include <iostream>
 #include <string>
 
+#include "Curves/BBDeCasteljauBezier.h"
 #include "Curves/BBDeCasteljauPolynomial.h"
+#include "Curves/MidpointDeCasteljauBezier.h"
 #include "Curves/NLIDeCasteljauBezier.h"
 #include "Curves/NLIDeCasteljauPolynomial.h"
 
@@ -24,32 +26,6 @@ GraphingWindow::GraphingWindow(flecs::world w) {
         .with(w.component<GraphingRelation>(), m_host)
         .cached()
         .build();
-
-    flecs::entity curve = m_host.child(w.component<GraphingRelation>(), "NLI Curve")
-        .add<NLIDeCasteljauPolynomial>()
-        .add<GraphingRelation>(m_host)
-        .set<GraphingDrawer>(GraphingDrawer {CurveDrawerFx, false});
-
-    flecs::entity curve2 = m_host.child(w.component<GraphingRelation>(), "BB Curve")
-        .add<BBDeCasteljauPolynomial>()
-        .add<GraphingRelation>(m_host)
-        .set<GraphingDrawer>(GraphingDrawer {CurveDrawerFx, false});
-
-    flecs::entity curve3 = m_host.child(w.component<GraphingRelation>(), "NLICurve 2")
-        .add<NLIDeCasteljauBezier>()
-        .add<GraphingRelation>(m_host)
-        .set<GraphingDrawer>(GraphingDrawer {CurveDrawerFt, true});
-
-    int i = 1;
-    for (float f = 0; f <= 1; f += .2, ++i) {
-        std::string name = "Point " + std::to_string(i);
-        m_host.child(w.component<GraphingRelation>(), name.c_str())
-            .emplace<Position>(glm::vec4{f, 1, 0, f})
-            .emplace<InputPoint>(InputPoint::ZPos | InputPoint::WPos)
-            .add<CurveControlPointRel>(curve)
-            .add<CurveControlPointRel>(curve2)
-            .add<CurveControlPointRel>(curve3);
-    }
 }
 
 ImGuiID GraphingWindow::Draw(bool &open) {
@@ -57,22 +33,25 @@ ImGuiID GraphingWindow::Draw(bool &open) {
 
     // Setup window
     ImGui::Begin("Graphing");
-    if (ImGui::Button("New Entity")) {
-        m_host.child<GraphingRelation>();
-    }
 
-    if (ImGui::Button("Serialize Test")) {
-        std::vector<std::string> units;
-        w.defer_begin();
-        m_pointQuery.each([&](flecs::entity e, Position&, InputPoint&) {
-            units.push_back(e.to_json().c_str());
-            e.destruct();
-        });
-        w.defer_end();
-        for (auto& unit : units) {
-            w.entity().from_json(unit.c_str());
-        }
-    }
+    // if (ImGui::Button("New Entity")) {
+    //     m_host.child<GraphingRelation>();
+    // }
+    //
+    // ImGui::SameLine();
+    // if (ImGui::Button("Serialize Test")) {
+    //     std::vector<std::string> units;
+    //     w.defer_begin();
+    //     m_pointQuery.each([&](flecs::entity e, Position&, InputPoint&) {
+    //         units.push_back(e.to_json().c_str());
+    //         e.destruct();
+    //     });
+    //     w.defer_end();
+    //     for (auto& unit : units) {
+    //         w.entity().from_json(unit.c_str());
+    //     }
+    // }
+
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));      // Disable padding
     ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(50, 50, 50, 255));  // Set a background color
     ImGui::BeginChild("canvas", ImVec2(0.0f, 0.0f), ImGuiChildFlags_Borders, ImGuiWindowFlags_NoMove);
@@ -135,6 +114,21 @@ ImGuiID GraphingWindow::Draw(bool &open) {
         ImGui::PopID();
     });
 
+    // Special cases to handle drags off screen without triggering offscreen
+    if (!m_currentlyDragging.is_alive()
+        && ImGui::IsMouseClicked(0)
+        && m_dragging_screen == false
+        && ImGui::GetMousePos().x >= canvas_p0.x
+        && ImGui::GetMousePos().y >= canvas_p0.y
+        && ImGui::GetMousePos().x < canvas_p1.x
+        && ImGui::GetMousePos().y < canvas_p1.y) {
+        m_dragging_screen = true;
+    }
+    if (!ImGui::IsMouseDown(0)) {
+        m_dragging_screen = false;
+    }
+
+
     if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
         if (m_currentlyDragging.is_alive()) {
             Position& pos = m_currentlyDragging.get_mut<Position>();
@@ -149,7 +143,7 @@ ImGuiID GraphingWindow::Draw(bool &open) {
                 pos.y = mouse_world.y;
 
             m_currentlyDragging.modified<Position>();
-        } else {
+        } else if (m_dragging_screen) {
             glm::vec2 delta = ImGui::GetIO().MouseDelta;
             delta.y = -delta.y;
             m_position -= delta / m_zoom;
@@ -176,4 +170,4 @@ ImGuiID GraphingWindow::Draw(bool &open) {
     ImGui::End();
 
     return ImGui::GetID("Graphing");
-};
+}

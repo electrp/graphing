@@ -18,12 +18,16 @@
 #include "Entity/EntityManipulator.h"
 #include "Graphing/Curve.h"
 #include "Graphing/GraphingWindow.h"
+#include "Projects/Project1.h"
+#include "Projects/Project2.h"
+#include "Projects/ProjectBase.h"
 #include "Render/Wgpu.h"
 
 static bool is_running = true;
 EntityManipulator* em;
 GraphingWindow* gw;
 flecs::world* w;
+ProjectBase* prj = new Project1{};
 
 const char* imgui_ini = R"(
 [Window][Debug##Default]
@@ -43,25 +47,33 @@ Collapsed=0
 
 [Window][Graphing]
 Pos=428,0
-Size=1402,965
+Size=852,800
 Collapsed=0
 DockId=0x00000002,0
 
 [Window][WindowOverViewport_11111111]
 Pos=0,0
-Size=1830,965
+Size=1280,800
 Collapsed=0
 
 [Window][Entities]
 Pos=0,0
-Size=426,965
+Size=426,800
 Collapsed=0
 DockId=0x00000001,0
 
+[Window][Project Window]
+Pos=0,0
+Size=426,800
+Collapsed=0
+DockId=0x00000001,1
+
 [Docking][Data]
-DockSpace   ID=0x08BD597D Window=0x1BBC0F80 Pos=0,0 Size=1830,965 Split=X
-  DockNode  ID=0x00000001 Parent=0x08BD597D SizeRef=426,800 Selected=0x66870828
+DockSpace   ID=0x08BD597D Window=0x1BBC0F80 Pos=0,0 Size=1280,800 Split=X
+  DockNode  ID=0x00000001 Parent=0x08BD597D SizeRef=426,800 Selected=0xDCED9389
   DockNode  ID=0x00000002 Parent=0x08BD597D SizeRef=1402,800 CentralNode=1 Selected=0x2390A690
+
+
 )";
 
 void main_loop() {
@@ -83,13 +95,28 @@ void main_loop() {
 
     ImGui::DockSpaceOverViewport();
 
-    // ImGui::ShowDemoWindow();
-
     bool draw_graphingWindow = true;
     bool draw_entityManipulator = true;
 
+    ImGui::Begin("Project Window");
+    if (ImGui::BeginCombo("Select Project", "...")) {
+        auto create_prj = [&](const char* name, std::function<void()> prj_alloc) {
+            if (ImGui::Button(name)) {
+                prj->Stop(*w, *gw);
+                delete prj;
+                prj_alloc();
+                prj->Start(*w, *gw);
+            }
+        };
+
+        create_prj("Project 1", [&]() {prj = new Project1{};});
+        create_prj("Project 2", [&]() {prj = new Project2{};});
+        ImGui::EndCombo();
+    }
+    prj->Update(*w, *gw);
+    ImGui::End();
     gw->Draw(draw_graphingWindow);
-    em->draw(&draw_entityManipulator, *w);
+    // em->draw(&draw_entityManipulator, *w);
     w->progress();
 
 
@@ -128,6 +155,7 @@ int main(int, char**)
             .with<GraphingWindow::GraphingRelation>(gw->m_host)
             .build()
     );
+    prj->Start(*w, *gw);
 
 #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop(main_loop, 0, true);

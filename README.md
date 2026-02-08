@@ -1,20 +1,15 @@
 # graphing
-Primarially for DigiPen MAT300
 
+## Executable
+Either:
+- Go to https://electrp.com/apps/graphing/
+- Run the provided executable
 
-You will likely need to download and setup wgpu binaries in the extern folders
+## Building
+Either:
+- Use generate_project.bat to create visual studio project (you may need to run twice)
+- Use CMake
+- Use the shell.nix and build_em.sh files within wsl to build for web
 
-# prj 2
-- Doing bezier curves
-- Take user input from clicking on points
-  - Spawn with points
-- Draw lines between spawned points
-- When there are 3 or more points, draw curve
-  - Graph bernstein polynomial `gamma(t) = (1-t)^2p0 + 2t(1-t)p1 + t^2p2`
-    - Use these as "weights" (they add up to 1!)
-  - Use nested linear interpolation 
-    - Makes a triangle that calculates gamma
-    - Make a slider that moves the shell
-  - Also make BB-form
-    - That can just make a graph
-  - Also midpoint subdivision?
+## Code locations
+Most of the math is contained within `src/Graphing`

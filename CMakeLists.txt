@@ -67,6 +67,16 @@ add_executable(graphing
         src/Graphing/PascalCache.h
         src/Graphing/Curves/NLIDeCasteljauBezier.cpp
         src/Graphing/Curves/NLIDeCasteljauBezier.h
+        src/Graphing/Curves/BBDeCasteljauBezier.cpp
+        src/Graphing/Curves/BBDeCasteljauBezier.h
+        src/Graphing/Curves/MidpointDeCasteljauBezier.cpp
+        src/Graphing/Curves/MidpointDeCasteljauBezier.h
+        src/Projects/ProjectBase.cpp
+        src/Projects/ProjectBase.h
+        src/Projects/Project1.cpp
+        src/Projects/Project1.h
+        src/Projects/Project2.cpp
+        src/Projects/Project2.h
 )
 
 if(EMSCRIPTEN)
@@ -127,3 +137,5 @@ if(WIN32)
             VERBATIM
     )
 endif()
+
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT graphing)

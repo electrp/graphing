@@ -4,6 +4,8 @@
 
 #ifndef GRAPHING_GRAPHINGWINDOW_H
 #define GRAPHING_GRAPHINGWINDOW_H
+#include <string>
+
 #include "flecs.h"
 #include "InputPoint.h"
 #include "glm/vec2.hpp"
@@ -29,8 +31,8 @@ struct GraphingWindow {
     explicit GraphingWindow(flecs::world w);
     ImGuiID Draw(bool& open);
 
-
     // Members
+    bool m_dragging_screen = false;
     flecs::entity m_host;
     flecs::entity m_currentlyDragging;
     float m_zoom = 200; // Pixels per unit

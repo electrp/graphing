@@ -15,8 +15,12 @@ struct NLIDeCasteljauBezier : BaseFunction {
     glm::vec4 sample(float t) const override;
     Curve generate_curve_obj() override;
 
+    bool draw_interp_info = true;
+    float debug_render_slider_pos = .5f;
+
     std::vector<glm::vec4> coef;
 };
 
+void CurveDrawerFt_NLIDeCasteljauBezier(flecs::entity e, GraphingWindow &window, GraphingWindow::GraphingContext &ctx);
 
 #endif //GRAPHING_NLIDECASTELJAUBEZIER_H

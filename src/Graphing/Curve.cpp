@@ -7,7 +7,9 @@
 #include <iostream>
 
 #include "Curves/BaseFunction.h"
+#include "Curves/BBDeCasteljauBezier.h"
 #include "Curves/BBDeCasteljauPolynomial.h"
+#include "Curves/MidpointDeCasteljauBezier.h"
 #include "Curves/NLIDeCasteljauBezier.h"
 #include "Curves/NLIDeCasteljauPolynomial.h"
 #include "Entity/Transform.h"
@@ -86,6 +88,10 @@ void SetupCurve(flecs::world w) {
         .add<CurveMarker>();
     w.component<NLIDeCasteljauBezier>()
         .add<CurveMarker>();
+    w.component<BBDeCasteljauBezier>()
+        .add<CurveMarker>();
+    w.component<MidpointDeCasteljauBezier>()
+        .add<CurveMarker>();
 }
 
 // For f(x)
@@ -108,7 +114,7 @@ void CurveDrawerFx(flecs::entity e, GraphingWindow &window, GraphingWindow::Grap
 }
 
 // For f(t)
-// I liked this idea but it did not work :(
+// I liked this idea but it did not work well :(
 // void CurveDrawerFt(flecs::entity e, GraphingWindow &window, GraphingWindow::GraphingContext &ctx) {
 //     struct Pair {
 //         float input;

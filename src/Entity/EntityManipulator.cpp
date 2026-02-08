@@ -10,6 +10,8 @@
 #include "misc/cpp/imgui_stdlib.h"
 #include "Transform.h"
 #include "Graphing/GraphingWindow.h"
+#include "Graphing/Curves/MidpointDeCasteljauBezier.h"
+#include "Graphing/Curves/NLIDeCasteljauBezier.h"
 
 EntityManipulator::EntityManipulator(flecs::query<> query) : entity_query(query) {
 
@@ -60,6 +62,17 @@ void EntityManipulator::draw(bool *enabled, flecs::world w) {
                 toggle("WPos", InputPoint::WPos);
 
                 ImGui::EndCombo();
+            }
+        }
+
+        if (auto* ptr = e.try_get_mut<NLIDeCasteljauBezier>(); ptr != nullptr) {
+            ImGui::Checkbox("Enable bezier sampler", &ptr->draw_interp_info);
+            ImGui::SliderFloat("t", &ptr->debug_render_slider_pos, 0, 1);
+        }
+
+        if (auto* ptr = e.try_get_mut<MidpointDeCasteljauBezier>(); ptr != nullptr) {
+            if (ImGui::InputInt("Subdivision Count", &ptr->subdivision_count)) {
+                ptr->regenerate();
             }
         }
 

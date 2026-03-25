@@ -3,6 +3,8 @@
 //
 
 #include "BBDeCasteljauBezier.h"
+#include "BBDeCasteljauBezier.h"
+#include "BBDeCasteljauBezier.h"
 #include <algorithm>
 
 #include "Graphing/PascalCache.h"
@@ -23,7 +25,7 @@ void BBDeCasteljauBezier::generate(std::span<glm::vec4> inputs) {
     }
 }
 
-glm::vec4 BBDeCasteljauBezier::sample(float t) const {
+glm::vec4 BBDeCasteljauBezier::sample(float t) {
     if (coef.size() == 0)
         return glm::vec4{0};
     if (coef.size() == 1)

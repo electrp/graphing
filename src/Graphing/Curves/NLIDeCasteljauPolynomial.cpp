@@ -5,6 +5,8 @@
 #include "NLIDeCasteljauPolynomial.h"
 #include <algorithm>
 
+#include "BBDeCasteljauBezier.h"
+#include "BBDeCasteljauBezier.h"
 #include "BBDeCasteljauPolynomial.h"
 #include "BBDeCasteljauPolynomial.h"
 
@@ -17,7 +19,7 @@ void NLIDeCasteljauPolynomial::generate(std::span<glm::vec4> inputs) {
     std::sort(coef.begin(), coef.end(), [&](glm::vec2 const& a, glm::vec2 const& b) { return a.x < b.x; });
 }
 
-glm::vec4 NLIDeCasteljauPolynomial::sample(float t) const {
+glm::vec4 NLIDeCasteljauPolynomial::sample(float t) {
     if (coef.size() == 0)
         return glm::vec4{0};
     if (coef.size() == 1)

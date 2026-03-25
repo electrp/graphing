@@ -5,6 +5,9 @@
 #include "MidpointDeCasteljauBezier.h"
 #include <algorithm>
 
+#include "BBDeCasteljauBezier.h"
+#include "BBDeCasteljauBezier.h"
+
 MidpointDeCasteljauBezier::~MidpointDeCasteljauBezier() {
 }
 
@@ -32,7 +35,7 @@ void MidpointDeCasteljauBezier::generate(std::span<glm::vec4> inputs) {
     regenerate();
 }
 
-glm::vec4 MidpointDeCasteljauBezier::sample(float t) const {
+glm::vec4 MidpointDeCasteljauBezier::sample(float t) {
     auto v = stored_samples[t * stored_samples.size()];
     return {v.x, v.y, 0, 0};
 }

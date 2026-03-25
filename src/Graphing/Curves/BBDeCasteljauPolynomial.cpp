@@ -17,6 +17,9 @@
 
 #include <algorithm>
 
+#include "BBDeCasteljauBezier.h"
+#include "BBDeCasteljauBezier.h"
+
 BBDeCasteljauPolynomial::~BBDeCasteljauPolynomial() {
 }
 
@@ -35,7 +38,7 @@ void BBDeCasteljauPolynomial::generate(std::span<glm::vec4> inputs) {
     }
 }
 
-glm::vec4 BBDeCasteljauPolynomial::sample(float t) const {
+glm::vec4 BBDeCasteljauPolynomial::sample(float t) {
     if (coef.size() == 0)
         return glm::vec4{0};
     if (coef.size() == 1)

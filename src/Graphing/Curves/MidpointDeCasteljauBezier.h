@@ -5,13 +5,15 @@
 #ifndef GRAPHING_MIDPOINTCASTELJAUBEZIER_H
 #define GRAPHING_MIDPOINTCASTELJAUBEZIER_H
 #include "BaseFunction.h"
+#include "BBDeCasteljauBezier.h"
+#include "BBDeCasteljauBezier.h"
 #include "Graphing/Curve.h"
 
 
 struct MidpointDeCasteljauBezier : BaseFunction {
     virtual ~MidpointDeCasteljauBezier();
     void generate(std::span<glm::vec4> given_samples) override;
-    glm::vec4 sample(float t) const override;
+    glm::vec4 sample(float t) override;
     Curve generate_curve_obj() override;
 
     void regenerate();

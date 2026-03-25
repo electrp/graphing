@@ -77,6 +77,12 @@ add_executable(graphing
         src/Projects/Project1.h
         src/Projects/Project2.cpp
         src/Projects/Project2.h
+        src/Graphing/DividedDifference.cpp
+        src/Graphing/DividedDifference.h
+        src/Graphing/Curves/PolynomialInterpolation.cpp
+        src/Graphing/Curves/PolynomialInterpolation.h
+        src/Projects/Project3.cpp
+        src/Projects/Project3.h
 )
 
 if(EMSCRIPTEN)

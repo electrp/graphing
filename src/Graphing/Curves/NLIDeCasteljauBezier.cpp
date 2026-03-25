@@ -7,6 +7,9 @@
 #include "BBDeCasteljauPolynomial.h"
 #include <algorithm>
 
+#include "BBDeCasteljauBezier.h"
+#include "BBDeCasteljauBezier.h"
+
 NLIDeCasteljauBezier::~NLIDeCasteljauBezier() {
 }
 
@@ -18,7 +21,7 @@ void NLIDeCasteljauBezier::generate(std::span<glm::vec4> inputs) {
     });
 }
 
-glm::vec4 NLIDeCasteljauBezier::sample(float t) const {
+glm::vec4 NLIDeCasteljauBezier::sample(float t) {
     if (coef.size() == 0)
         return glm::vec4{0};
     if (coef.size() == 1)

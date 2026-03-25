@@ -17,9 +17,11 @@
 
 #include "Entity/EntityManipulator.h"
 #include "Graphing/Curve.h"
+#include "Graphing/DividedDifference.h"
 #include "Graphing/GraphingWindow.h"
 #include "Projects/Project1.h"
 #include "Projects/Project2.h"
+#include "Projects/Project3.h"
 #include "Projects/ProjectBase.h"
 #include "Render/Wgpu.h"
 
@@ -111,12 +113,13 @@ void main_loop() {
 
         create_prj("Project 1", [&]() {prj = new Project1{};});
         create_prj("Project 2", [&]() {prj = new Project2{};});
+        create_prj("Project 3", [&]() {prj = new Project3{};});
         ImGui::EndCombo();
     }
     prj->Update(*w, *gw);
     ImGui::End();
+    em->draw(&draw_entityManipulator, *w);
     gw->Draw(draw_graphingWindow);
-    // em->draw(&draw_entityManipulator, *w);
     w->progress();
 
 
@@ -145,6 +148,8 @@ int main(int, char**)
     w->import<flecs::stats>();
     w->set<flecs::Rest>({});
 #endif
+
+    DividedDifference::test();
 
     SetupInputPoint(*w);
     SetupTransform(*w);

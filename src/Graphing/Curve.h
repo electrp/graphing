@@ -13,6 +13,7 @@
 struct Curve {
     std::function<void(flecs::entity, std::span<glm::vec4> inputs)> generate;
     std::function<glm::vec4(flecs::entity, float)> sample;
+    std::function<void(flecs::entity)> editor;
 };
 
 struct CurveMarker {};
@@ -36,6 +37,9 @@ void CurveDrawerFtSamples(flecs::entity e, GraphingWindow& window, GraphingWindo
             (ctx.world_to_screen(last) + ctx.canvas_p0, ctx.world_to_screen(curr) + ctx.canvas_p0, ImColor(155, 255, 255, 128));
         last = curr;
     }
+    glm::vec2 final = curve.sample(e, 1);
+    dl->AddLine
+        (ctx.world_to_screen(last) + ctx.canvas_p0, ctx.world_to_screen(final) + ctx.canvas_p0, ImColor(155, 255, 255, 128));
 }
 
 #endif //GRAPHING_CURVE_H

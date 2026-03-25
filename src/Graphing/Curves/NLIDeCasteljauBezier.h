@@ -5,6 +5,8 @@
 #ifndef GRAPHING_NLIDECASTELJAUBEZIER_H
 #define GRAPHING_NLIDECASTELJAUBEZIER_H
 #include "BaseFunction.h"
+#include "BBDeCasteljauBezier.h"
+#include "BBDeCasteljauBezier.h"
 #include "BBDeCasteljauPolynomial.h"
 #include "BBDeCasteljauPolynomial.h"
 
@@ -12,7 +14,7 @@
 struct NLIDeCasteljauBezier : BaseFunction {
     virtual ~NLIDeCasteljauBezier();
     void generate(std::span<glm::vec4> inputs) override;
-    glm::vec4 sample(float t) const override;
+    glm::vec4 sample(float t) override;
     Curve generate_curve_obj() override;
 
     bool draw_interp_info = true;

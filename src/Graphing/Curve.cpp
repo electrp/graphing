@@ -12,6 +12,7 @@
 #include "Curves/MidpointDeCasteljauBezier.h"
 #include "Curves/NLIDeCasteljauBezier.h"
 #include "Curves/NLIDeCasteljauPolynomial.h"
+#include "Curves/PolynomialInterpolation.h"
 #include "Entity/Transform.h"
 
 void SetupCurve(flecs::world w) {
@@ -91,6 +92,8 @@ void SetupCurve(flecs::world w) {
     w.component<BBDeCasteljauBezier>()
         .add<CurveMarker>();
     w.component<MidpointDeCasteljauBezier>()
+        .add<CurveMarker>();
+    w.component<PolynomialInterpolation>()
         .add<CurveMarker>();
 }
 

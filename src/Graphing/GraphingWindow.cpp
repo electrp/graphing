@@ -98,11 +98,16 @@ ImGuiID GraphingWindow::Draw(bool &open) {
         IM_COL32(255, 0, 0, 128));
 
     m_pointQuery.each([&](flecs::entity e, Position& p, InputPoint& ip) {
-        ImGui::PushID(e);
         glm::vec2 screen = world_to_screen(p);
         glm::vec2 begin_pos = screen - button_size / 2.0f;
+        if (begin_pos.y >= canvas_sz.y)
+            return;
+        glm::vec2 size = button_size;
+        size.y = std::min(size.y + begin_pos.y, canvas_sz.y) - begin_pos.y;
+
+        ImGui::PushID(e);
         ImGui::SetCursorPos(begin_pos);
-        ImGui::InvisibleButton("Draggable", button_size);
+        ImGui::InvisibleButton("Draggable", size);
         draw_list->AddCircleFilled(
             screen + canvas_p0,
             m_pointRadius,

@@ -22,6 +22,7 @@
 #include "Projects/Project1.h"
 #include "Projects/Project2.h"
 #include "Projects/Project3.h"
+#include "Projects/Project5.h"
 #include "Projects/ProjectBase.h"
 #include "Render/Wgpu.h"
 
@@ -114,6 +115,7 @@ void main_loop() {
         create_prj("Project 1", [&]() {prj = new Project1{};});
         create_prj("Project 2", [&]() {prj = new Project2{};});
         create_prj("Project 3", [&]() {prj = new Project3{};});
+        create_prj("Project 5", [&]() {prj = new Project5{};});
         ImGui::EndCombo();
     }
     prj->Update(*w, *gw);

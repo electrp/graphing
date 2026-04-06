@@ -83,6 +83,12 @@ add_executable(graphing
         src/Graphing/Curves/PolynomialInterpolation.h
         src/Projects/Project3.cpp
         src/Projects/Project3.h
+        src/Graphing/Curves/InterpolatingCubicSplines.cpp
+        src/Graphing/Curves/InterpolatingCubicSplines.h
+        src/Graphing/Curves/DeBoorBSpline.cpp
+        src/Graphing/Curves/DeBoorBSpline.h
+        src/Projects/Project5.cpp
+        src/Projects/Project5.h
 )
 
 if(EMSCRIPTEN)

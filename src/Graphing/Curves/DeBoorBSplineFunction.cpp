@@ -2,19 +2,19 @@
 // Created by willb on 4/6/2026.
 //
 
-#include "DeBoorBSpline.h"
+#include "DeBoorBSplineFunction.h"
 
-DeBoorBSpline::~DeBoorBSpline() {
+DeBoorBSplineFunction::~DeBoorBSplineFunction() {
 }
 
-void DeBoorBSpline::generate(std::span<glm::vec4> inputs) {
+void DeBoorBSplineFunction::generate(std::span<glm::vec4> inputs) {
     coefs.clear();
     for (auto& input : inputs) {
         coefs.push_back(input[1]);
     }
 }
 
-glm::vec4 DeBoorBSpline::sample(float t) {
+glm::vec4 DeBoorBSplineFunction::sample(float t) {
     int J = floor(t); // Segment index
 
     std::vector<float> vs; // Value list
@@ -38,6 +38,6 @@ glm::vec4 DeBoorBSpline::sample(float t) {
     return {vs[degree], vs[degree], 0, 1};
 }
 
-Curve DeBoorBSpline::generate_curve_obj() {
-    return template_generate_curve_obj<DeBoorBSpline>();
+Curve DeBoorBSplineFunction::generate_curve_obj() {
+    return template_generate_curve_obj<DeBoorBSplineFunction>();
 }

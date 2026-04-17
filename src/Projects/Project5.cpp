@@ -6,7 +6,7 @@
 
 #include <random>
 
-#include "Graphing/Curves/DeBoorBSpline.h"
+#include "Graphing/Curves/DeBoorBSplineFunction.h"
 #include "Graphing/Curves/PolynomialInterpolation.h"
 
 
@@ -14,7 +14,7 @@ void Project5::Start(flecs::world w, GraphingWindow &window) {
     m_host = w.entity();
 
     m_curve = m_host.child()
-        .add<DeBoorBSpline>()
+        .add<DeBoorBSplineFunction>()
         .add<GraphingWindow::GraphingRelation>(window.m_host)
         .set<GraphingWindow::GraphingDrawer>(GraphingWindow::GraphingDrawer {CurveDrawerFx});
 
@@ -41,7 +41,7 @@ void Project5::RemakePoints(GraphingWindow &window) {
     degree = std::clamp(degree, 1, 9999);
     m_point_count = std::clamp(m_point_count, 2, 9999);
 
-    DeBoorBSpline& spline = m_curve.get_mut<DeBoorBSpline>();
+    DeBoorBSplineFunction& spline = m_curve.get_mut<DeBoorBSplineFunction>();
     spline.degree = degree;
 
     while (m_points.size() > 0) {

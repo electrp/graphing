@@ -7,9 +7,9 @@
 #include "BaseFunction.h"
 
 
-class DeBoorBSpline : BaseFunction{
+class DeBoorBSplineFunction : BaseFunction{
 public:
-    virtual ~DeBoorBSpline();
+    virtual ~DeBoorBSplineFunction();
     void generate(std::span<glm::vec4> inputs) override;
     glm::vec4 sample(float t) override;
     Curve generate_curve_obj() override;

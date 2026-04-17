@@ -85,10 +85,14 @@ add_executable(graphing
         src/Projects/Project3.h
         src/Graphing/Curves/InterpolatingCubicSplines.cpp
         src/Graphing/Curves/InterpolatingCubicSplines.h
-        src/Graphing/Curves/DeBoorBSpline.cpp
-        src/Graphing/Curves/DeBoorBSpline.h
+        src/Graphing/Curves/DeBoorBSplineFunction.cpp
+        src/Graphing/Curves/DeBoorBSplineFunction.h
         src/Projects/Project5.cpp
         src/Projects/Project5.h
+        src/Projects/Project7.cpp
+        src/Projects/Project7.h
+        src/Graphing/Curves/DeBoorBeSplineCurve.cpp
+        src/Graphing/Curves/DeBoorBeSplineCurve.h
 )
 
 if(EMSCRIPTEN)

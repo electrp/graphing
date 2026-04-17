@@ -23,6 +23,7 @@
 #include "Projects/Project2.h"
 #include "Projects/Project3.h"
 #include "Projects/Project5.h"
+#include "Projects/Project7.h"
 #include "Projects/ProjectBase.h"
 #include "Render/Wgpu.h"
 
@@ -30,7 +31,7 @@ static bool is_running = true;
 EntityManipulator* em;
 GraphingWindow* gw;
 flecs::world* w;
-ProjectBase* prj = new Project1{};
+ProjectBase* prj = new Project7{};
 
 const char* imgui_ini = R"(
 [Window][Debug##Default]
@@ -116,6 +117,7 @@ void main_loop() {
         create_prj("Project 2", [&]() {prj = new Project2{};});
         create_prj("Project 3", [&]() {prj = new Project3{};});
         create_prj("Project 5", [&]() {prj = new Project5{};});
+        create_prj("Project 7", [&]() {prj = new Project7{};});
         ImGui::EndCombo();
     }
     prj->Update(*w, *gw);

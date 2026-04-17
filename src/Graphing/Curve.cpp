@@ -9,7 +9,8 @@
 #include "Curves/BaseFunction.h"
 #include "Curves/BBDeCasteljauBezier.h"
 #include "Curves/BBDeCasteljauPolynomial.h"
-#include "Curves/DeBoorBSpline.h"
+#include "Curves/DeBoorBeSplineCurve.h"
+#include "Curves/DeBoorBSplineFunction.h"
 #include "Curves/MidpointDeCasteljauBezier.h"
 #include "Curves/NLIDeCasteljauBezier.h"
 #include "Curves/NLIDeCasteljauPolynomial.h"
@@ -96,9 +97,10 @@ void SetupCurve(flecs::world w) {
         .add<CurveMarker>();
     w.component<PolynomialInterpolation>()
         .add<CurveMarker>();
-    w.component<DeBoorBSpline>()
+    w.component<DeBoorBSplineFunction>()
         .add<CurveMarker>();
-}
+    w.component<DeBoorBSplineCurve>()
+            .add<CurveMarker>();}
 
 // For f(x)
 void CurveDrawerFx(flecs::entity e, GraphingWindow &window, GraphingWindow::GraphingContext& ctx) {
